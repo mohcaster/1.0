@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Ticket Management System</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="styles.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <i class="fas fa-ticket-alt"></i>
+        <span>IT DC Setúbal</span>
+      </div>
+      <div class="header-actions">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span>Admin</span>
+        </div>
+        <button class="btn btn-logout">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <ul>
+      <li><a href="#" onclick="switchToTab('dashboard')" data-tab="dashboard" class="active">Dashboard</a></li>
+      <li><a href="#" onclick="switchToTab('create')" data-tab="create">Create Ticket</a></li>
+      <li><a href="#" onclick="switchToTab('tickets')" data-tab="tickets">Tickets</a></li>
+      <li><a href="#" onclick="switchToTab('pedido')" data-tab="pedido">Pedido de Material</a></li>
+      <li><a href="#" onclick="switchToTab('pedidos')" data-tab="pedidos">Pedidos</a></li>
+      <li><a href="#" onclick="switchToTab('statistics')" data-tab="statistics">Statistics</a></li>
+      <li><a href="#" onclick="switchToTab('feedback')" data-tab="feedback">Feedback</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="container">
+      <div id="dashboard" class="tab-content active">
+        <div class="dashboard-header">
+          <div class="open-tickets-card">
+            <div class="open-tickets-content">
+              <div class="open-tickets-icon">
+                <i class="fas fa-ticket-alt"></i>
+              </div>
+              <div class="open-tickets-info">
+                <h2>Open Tickets</h2>
+                <div class="open-tickets-value" id="openTicketsCount">0</div>
+                <div class="open-tickets-trend" id="openTicketsTrend">
+                  <span class="trend-icon"></span>
+                  <span class="trend-value"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="performance-section">
+          <div class="section-header">
+            <h2>Performance Overview</h2>
+            <select id="dashboardMonthSelect" class="form-control">
+              <option value="all">All Time</option>
+              </select>
+          </div>
+
+          <div class="target-grid">
+            <div class="target-item">
+              <div class="target-header">
+                <span class="target-label">Resolution Time</span>
+                <span class="target-goal">Target: 48h</span>
+              </div>
+              <div class="target-value-container">
+                <span class="target-value" id="dashboardAvgResolutionTime">-</span>
+                <span class="target-indicator" id="dashboardResolutionTimeIndicator"></span>
+              </div>
+              <div class="target-progress">
+                <div class="progress-bar" id="dashboardResolutionTimeProgress"></div>
+              </div>
+            </div>
+            <div class="target-item">
+              <div class="target-header">
+                <span class="target-label">Resolution Rate</span>
+                <span class="target-goal">Target: 95%</span>
+              </div>
+              <div class="target-value-container">
+                <span class="target-value" id="dashboardResolutionRatio">-</span>
+                <span class="target-indicator" id="dashboardResolutionRateIndicator"></span>
+              </div>
+              <div class="target-progress">
+                <div class="progress-bar" id="dashboardResolutionRateProgress"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="global-performance-section">
+          <div class="section-header">
+            <h2>Global Performance</h2>
+          </div>
+          <div class="global-metrics-grid">
+            <div class="global-metric-card">
+              <div class="global-metric-icon">
+                <i class="fas fa-ticket-alt"></i>
+              </div>
+              <div class="global-metric-info">
+                <span class="global-metric-label">Total Tickets</span>
+                <span class="global-metric-value" id="dashboardTotalTicketsCount">0</span>
+              </div>
+            </div>
+            <div class="global-metric-card">
+              <div class="global-metric-icon">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="global-metric-info">
+                <span class="global-metric-label">Resolved Tickets</span>
+                <span class="global-metric-value" id="dashboardResolvedTicketsCount">0</span>
+              </div>
+            </div>
+            <div class="global-metric-card">
+              <div class="global-metric-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="global-metric-info">
+                <span class="global-metric-label">Open Tickets</span>
+                <span class="global-metric-value" id="dashboardOpenTicketsCountStats">0</span>
+              </div>
+            </div>
+            <div class="global-metric-card">
+              <div class="global-metric-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="global-metric-info">
+                <span class="global-metric-label">Resolution Rate</span>
+                <span class="global-metric-value" id="dashboardGlobalResolutionRate">0%</span>
+              </div>
+            </div>
+            <div class="global-metric-card">
+              <div class="global-metric-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="global-metric-info">
+                <span class="global-metric-label">Avg. Response Time</span>
+                <span class="global-metric-value" id="dashboardGlobalAvgResponseTime">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="chart-card">
+            <h3>Resolution Time Trend</h3>
+            <div class="chart-container">
+              <canvas id="resolutionTimeChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3>Resolution Rate Trend</h3>
+            <div class="chart-container">
+              <canvas id="resolutionRateChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tickets" class="tab-content">
+        <div class="card">
+
+          <div class="table-controls">
+            <h2>Ticket List</h2>
+            <div class="table-filters">
+              <div class="filter-group">
+                <select class="select-filter" id="createdFilter">
+                  <option value="all">All Time</option>
+                  <option value="last30days">Last 30 Days</option>
+                  <option value="last7days">Last 7 Days</option>
+                  <option value="last24hours">Last 24 Hours</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <select class="select-filter" id="statusFilter">
+                  <option value="all">All Status</option>
+                  <option value="Open">Open</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Closed">Closed</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <select class="select-filter" id="teamFilter">
+                  <option value="all">All Teams</option>
+                  <option>Exotec</option>
+                  <option>Volumosos</option>
+                  <option>Heteroclítos</option>
+                  <option>ServiceLog</option>
+                  <option>Cais</option>
+                  <option>Eccomerce</option>
+                  <option>Bicicletas</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <select class="select-filter" id="assigneeFilter">
+                  <option value="all">All Assignees</option>
+                  <option value="Unassigned">Unassigned</option>
+                  <option value="Diogo Rasteiro">Diogo Rasteiro</option>
+                  <option value="Tiago Martins">Tiago Martins</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <i class="fas fa-search filter-icon"></i>
+                <input type="text" class="filter-input" id="ticketSearchInput" placeholder="Search by: ID, Status, Team, Assignee, Created, Closed">
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Material Type</th>
+                  <th>Location</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Team</th>
+                  <th>Assigned To</th>
+                  <th>Created</th>
+                  <th>Closed</th>
+                  <th>Duration</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ticketsTableBody">
+                <tr><td colspan="11">Loading tickets...</td></tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="create" class="tab-content">
+        <div class="card">
+          <h2>Create New Ticket</h2>
+
+          <form id="ticketForm"> <div class="form-grid">
+              <div class="form-group">
+                <label for="materialType">Material Type</label>
+                <input type="text" id="materialType" name="materialType" class="form-control" placeholder="Enter material type" required>
+              </div>
+
+              <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" class="form-control" placeholder="Enter location" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select id="category" name="category" class="form-control" required>
+                <option value="">Select Category</option>
+                <option>Hardware</option>
+                <option>Software</option>
+                <option>Network</option>
+                <option>Account</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Your Email</label>
+              <div class="email-input-group">
+                <input type="text" id="email" name="email_prefix" class="form-control" placeholder="your.name" required>
+                <span class="email-domain">@decathlon.com</span>
+              </div>
+              <div class="email-error"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="priority">Priority</label>
+              <select id="priority" name="priority" class="form-control" required>
+                <option value="">Select Priority</option>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+                <option>Critical</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="team">Team</label>
+              <select id="team" name="team" class="form-control" required>
+                <option value="">Select Team</option>
+                <option>Exotec</option>
+                <option>Volumosos</option>
+                <option>Heteroclítos</option>
+                <option>ServiceLog</option>
+                <option>Cais</option>
+                <option>Eccomerce</option>
+                <option>Bicicletas</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea id="description" name="description" class="form-control" placeholder="Please provide details about the issue" required></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn">Submit Ticket</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="statistics" class="tab-content">
+        <div class="stats-wrapper">
+          <div class="global-performance-section1">
+            <div class="section-header">
+              <h2>Global Performance</h2>
+            </div>
+            <div class="global-metrics-grid">
+              <div class="global-metric-card">
+                <div class="global-metric-icon">
+                  <i class="fas fa-ticket-alt"></i>
+                </div>
+                <div class="global-metric-info">
+                  <span class="global-metric-label">Total Tickets</span>
+                  <span class="global-metric-value" id="totalTicketsCount">0</span>
+                </div>
+              </div>
+              <div class="global-metric-card">
+                <div class="global-metric-icon">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="global-metric-info">
+                  <span class="global-metric-label">Resolved Tickets</span>
+                  <span class="global-metric-value" id="resolvedTicketsCount">0</span>
+                </div>
+              </div>
+              <div class="global-metric-card">
+                <div class="global-metric-icon">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="global-metric-info">
+                  <span class="global-metric-label">Open Tickets</span>
+                  <span class="global-metric-value" id="statsOpenTicketsCount">0</span> </div>
+              </div>
+              <div class="global-metric-card">
+                <div class="global-metric-icon">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="global-metric-info">
+                  <span class="global-metric-label">Resolution Rate</span>
+                  <span class="global-metric-value" id="statsGlobalResolutionRate">0%</span> </div>
+              </div>
+              <div class="global-metric-card">
+                <div class="global-metric-icon">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="global-metric-info">
+                  <span class="global-metric-label">Avg. Response Time</span>
+                  <span class="global-metric-value" id="statsGlobalAvgResponseTime">-</span> </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="performance-section1">
+             <div class="section-header">
+               <h2>Performance Overview</h2>
+               <select id="kpiMonthSelect" class="form-control" onchange="updateDashboardStats()">
+                 <option value="all">All Time</option>
+                 </select>
+             </div>
+            <div class="target-grid">
+              <div class="target-item">
+                <div class="target-header">
+                  <span class="target-label">Resolution Time</span>
+                  <span class="target-goal">Target: 48h</span>
+                </div>
+                <div class="target-value-container">
+                  <span class="target-value" id="avgResolutionTime">-</span>
+                  <span class="target-indicator" id="resolutionTimeIndicator"></span>
+                </div>
+                <div class="target-progress">
+                  <div class="progress-bar" id="resolutionTimeProgress"></div>
+                </div>
+              </div>
+              <div class="target-item">
+                <div class="target-header">
+                  <span class="target-label">Resolution Rate</span>
+                  <span class="target-goal">Target: 95%</span>
+                </div>
+                <div class="target-value-container">
+                  <span class="target-value" id="resolutionRatio">-</span>
+                  <span class="target-indicator" id="resolutionRateIndicator"></span>
+                </div>
+                <div class="target-progress">
+                  <div class="progress-bar" id="resolutionRateProgress"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stats-card team-chart">
+              <h3>Tickets by Team</h3>
+              <div class="chart-container">
+                <canvas id="teamChart"></canvas>
+              </div>
+            </div>
+            <div class="stats-card category-chart">
+              <h3>Tickets by Category</h3>
+              <div class="chart-container">
+                <canvas id="categoryChart"></canvas>
+              </div>
+            </div>
+            <div class="stats-card priority-chart">
+              <h3>Tickets by Priority</h3>
+              <div class="chart-container">
+                <canvas id="priorityChart"></canvas>
+              </div>
+            </div>
+            <div class="stats-card assignee-chart">
+              <h3>Assignee Ticket Trends</h3>
+              <div class="chart-container">
+                <canvas id="assigneeChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-details">
+            <div class="ticket-metrics">
+              <div class="metric-row">
+                <div class="metric-card priority-high">
+                  <span class="metric-icon"><i class="fas fa-exclamation-circle"></i></span>
+                  <div class="metric-info">
+                    <span class="metric-label">Critical & High Priority</span>
+                    <span class="metric-value" id="highPriorityCount">-</span>
+                  </div>
+                </div>
+                 </div>
+
+              <div class="team-metrics">
+                <h3>Team Performance</h3>
+                <div class="team-grid" id="teamMetrics">
+                  <p>Loading team metrics...</p>
+                </div>
+              </div>
+
+              <div class="assignee-performance">
+                <h3>Assignee Performance</h3>
+                <div class="assignee-grid">
+                    <div class="assignee-item">
+                        <div class="assignee-header">
+                            <span class="assignee-name">Diogo Rasteiro</span>
+                            <span class="assignee-stats" id="diogoStats">-/-</span>
+                        </div>
+                        <div class="assignee-metrics">
+                            <div class="metric"><span class="metric-label">Avg. Resolution</span><span class="metric-value" id="diogoAvgTime">-</span></div>
+                            <div class="metric"><span class="metric-label">Current Load</span><span class="metric-value" id="diogoLoad">- active</span></div>
+                        </div>
+                    </div>
+                     <div class="assignee-item">
+                        <div class="assignee-header">
+                            <span class="assignee-name">Tiago Martins</span>
+                            <span class="assignee-stats" id="tiagoStats">-/-</span>
+                        </div>
+                        <div class="assignee-metrics">
+                            <div class="metric"><span class="metric-label">Avg. Resolution</span><span class="metric-value" id="tiagoAvgTime">-</span></div>
+                            <div class="metric"><span class="metric-label">Current Load</span><span class="metric-value" id="tiagoLoad">- active</span></div>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="feedback" class="tab-content">
+        <div class="card2">
+          <h2>Send Feedback</h2>
+          <div class="feedback-container">
+            <div class="ticket-selector">
+              <h3>Select Ticket</h3>
+              <select id="feedbackTicketSelect" class="form-control" onchange="updateFeedbackForm()">
+                <option value="">Select a ticket...</option>
+                </select>
+              <div class="ticket-details" id="selectedTicketDetails">
+                </div>
+            </div>
+
+            <form id="feedbackForm" class="feedback-form"> <div class="form-group">
+                <label for="emailSubject">Subject</label>
+                <input type="text" id="emailSubject" class="form-control" required>
+              </div>
+
+              <div class="form-group">
+                <label for="emailBody">Message</label>
+                <textarea id="emailBody" class="form-control" rows="8" required></textarea>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn">Send Feedback (via Gmail)</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div id="pedido" class="tab-content">
+        <div class="card">
+          <h2>Pedido de Material</h2>
+          <form id="materialRequestForm"> <div class="form-group">
+              <label for="pedidoMaterialType">What is the material?</label>
+              <input type="text" id="pedidoMaterialType" name="materialType" class="form-control" placeholder="Enter material type" required>
+            </div>
+
+            <div class="form-group">
+              <label for="pedidoTeam">What is your team?</label>
+              <select id="pedidoTeam" name="team" class="form-control" required>
+                <option value="">Select Team</option>
+                <option>Exotec</option>
+                <option>Volumosos</option>
+                <option>Heteroclítos</option>
+                <option>ServiceLog</option>
+                <option>Cais</option>
+                <option>Eccomerce</option>
+                <option>Bicicletas</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="pedidoPriority">What's the priority?</label>
+              <select id="pedidoPriority" name="priority" class="form-control" required>
+                <option value="">Select Priority</option>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+                <option>Critical</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="pedidoQuantity">Quantity?</label>
+              <input type="number" id="pedidoQuantity" name="quantity" class="form-control" placeholder="Enter quantity" required min="1">
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn">Submit Request</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="pedidos" class="tab-content">
+        <div class="card">
+          <div class="table-controls">
+            <h2>Material Requests</h2>
+            <div class="table-filters">
+              <div class="filter-group">
+                <select class="select-filter" id="pedidoStatusFilter"> <option value="all">All Status</option>
+                  <option value="pending">Pendente</option>
+                  <option value="delivered">Entregue</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <select class="select-filter" id="pedidoTeamFilter"> <option value="all">All Teams</option>
+                  <option value="Exotec">Exotec</option>
+                  <option value="Volumosos">Volumosos</option>
+                  <option value="Heteroclítos">Heteroclítos</option>
+                  <option value="ServiceLog">ServiceLog</option>
+                  <option value="Cais">Cais</option>
+                  <option value="Eccomerce">Eccomerce</option>
+                  <option value="Bicicletas">Bicicletas</option>
+                </select>
+
+              </div>
+              <div class="filter-group">
+                <select class="select-filter" id="pedidoPriorityFilter"> <option value="all">All Priorities</option>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                  <option value="Critical">Critical</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <i class="fas fa-search filter-icon"></i>
+                <input type="text" class="filter-input" id="pedidoSearchInput" placeholder="Search by: ID, Material, Team, Priority"> </div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Material Type</th>
+                  <th>Team</th>
+                  <th>Priority</th>
+                  <th>Quantity</th>
+                  <th>Created</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="pedidosTableBody">
+                 <tr><td colspan="8">Loading requests...</td></tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      IT Ticket Management System &copy; 2025
+    </div>
+  </footer>
+
+  <div id="passwordModal" class="modal">
+    <div class="modal-content">
+      <h2>Reopen Ticket</h2>
+      <p>Please enter the password to reopen this ticket:</p>
+      <input type="password" id="reopenPassword" class="form-control" placeholder="Enter password">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
+        <button class="btn" id="confirmReopen">Confirm</button> </div>
+    </div>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

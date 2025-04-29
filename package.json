@@ -1,0 +1,19 @@
+{
+  "name": "it-ticketing-system",
+  "version": "1.0.0",
+  "description": "IT Ticketing System Frontend with Netlify Functions",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "netlify",
+    "supabase",
+    "ticketing"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.43.5"
+  }
+}

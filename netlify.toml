@@ -1,0 +1,10 @@
+[functions]
+  directory = "netlify/functions/" # Tells Netlify where your function code lives
+  node_bundler = "esbuild"         # Uses a fast and modern bundler for your functions
+
+# This redirect makes calling functions easier from your JavaScript
+# Instead of '/.netlify/functions/get-tickets', you can use '/api/get-tickets'
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200 # OK status code for the redirect
