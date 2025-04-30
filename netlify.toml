@@ -4,7 +4,7 @@
 
 # This redirect makes calling functions easier from your JavaScript
 # Instead of '/.netlify/functions/get-tickets', you can use '/api/get-tickets'
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200 # OK status code for the redirect
+[[redirects]]                             # [[redirects]]                    <-- Comment out or delete this line
+  from = "/api/*"                         #   from = "/api/*"                <-- Comment out or delete this line
+  to = "/.netlify/functions/:splat"        #   to = "/.netlify/functions/:splat"  <-- Comment out or delete this line
+  status = 200 # OK status code for the redirect    #   status = 200                   <-- Comment out or delete this line
